@@ -1,17 +1,18 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
 import React from 'react';
-import StockPurchaseForm from './PurchaseForm';
+import { StockProvider } from './StockContext';
+import StockForm from './StockForm';
+import StockList from './StockList';
+import './styles.css'; // Optionally, include your styles
 
 function App() {
     return (
-        <div className="dashboard">
-            <h1>Finance Dashboard</h1>
-            <StockPurchaseForm />
-            {/* Add additional components like stock lists, summaries, etc. */}
-        </div>
+        <StockProvider>
+            <div className="app-container">
+                <h1>Finance Dashboard</h1>
+                <StockForm /> {/* Component to add new stocks */}
+                <StockList /> {/* Component to display the list of stocks */}
+            </div>
+        </StockProvider>
     );
 }
 
