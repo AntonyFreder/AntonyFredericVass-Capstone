@@ -1,18 +1,29 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
 import React from 'react';
-import StockPurchaseForm from './PurchaseForm';
+import './styles.css';
+import { StockProvider } from './StockContext';
+import StockForm from './StockForm';
+import StockList from './StockList';
+
+
 
 function App() {
     return (
-        <div className="dashboard">
-            <h1>Finance Dashboard</h1>
-            <StockPurchaseForm />
-            {/* Add additional components like stock lists, summaries, etc. */}
-        </div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column', // stack vertically
+          justifyContent: 'center', // vertical centering
+          alignItems: 'center',     // horizontal centering
+          minHeight: '100vh',       // full viewport height
+          width: '100%',            // full width
+          backgroundColor: '#f0f4f8'
+        }}
+      >
+        <h1 style={{ marginBottom: '20px' }}>My Stock Dashboard</h1>
+        <StockForm />
+        <StockList />
+      </div>
     );
-}
-
-export default App;
+  }
+  
+  export default App;
