@@ -1,19 +1,29 @@
 import React from 'react';
+import './styles.css';
 import { StockProvider } from './StockContext';
 import StockForm from './StockForm';
 import StockList from './StockList';
-import './styles.css'; // Optionally, include your styles
+
+
 
 function App() {
     return (
-        <StockProvider>
-            <div className="app-container">
-                <h1>Finance Dashboard</h1>
-                <StockForm /> {/* Component to add new stocks */}
-                <StockList /> {/* Component to display the list of stocks */}
-            </div>
-        </StockProvider>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column', // stack vertically
+          justifyContent: 'center', // vertical centering
+          alignItems: 'center',     // horizontal centering
+          minHeight: '100vh',       // full viewport height
+          width: '100%',            // full width
+          backgroundColor: '#f0f4f8'
+        }}
+      >
+        <h1 style={{ marginBottom: '20px' }}>My Stock Dashboard</h1>
+        <StockForm />
+        <StockList />
+      </div>
     );
-}
-
-export default App;
+  }
+  
+  export default App;
