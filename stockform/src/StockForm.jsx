@@ -39,11 +39,12 @@ const StockForm = () => {
 
       if (shouldFetch) {
         try {
-          const response = await fetch(`https://finnhub.io/api/v1/stock/symbol?exchange=US&token=${API_KEY}`);
-          const data = await response.json();
-          setSymbols(data);
-          localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: Date.now() }));
-        } catch (err) {
+          const res = await fetch(`https://finnhub.io/api/v1/stock/symbol?exchange=US&token=${API_KEY}`);
+          const data = await res.json();
+          const top50 = data.slice(0, 50); // Keep only top 50
+          setSymbols(top50);
+          localStorage.setItem(cacheKey, JSON.stringify({ data: top50, timestamp: Date.now() }));
+        } catch(err) {
           console.error('Error fetching symbols:', err);
         } finally {
           setLoadingSymbols(false);
@@ -78,27 +79,32 @@ const StockForm = () => {
 
   // Handle adding stock to list
   const handleAddStock = () => {
-    if (symbol && currentPrice !== null && quantity && purchasePrice) {
-      const profitLoss = (currentPrice - parseFloat(purchasePrice)) * parseInt(quantity);
-      setStockList(prev => [
-        ...prev,
-        {
-          id: Date.now(),
-          symbol,
-          quantity: parseInt(quantity),
-          purchasePrice: parseFloat(purchasePrice),
-          currentPrice,
-          profitLoss,
-        },
-      ]);
-      // Reset inputs
+    const current = parseFloat(currentPrice);
+    const purchase = parseFloat(purchasePrice);
+    const qty = parseInt(quantity);
+  
+    if (
+      symbol &&
+      !isNaN(current) &&
+      !isNaN(purchase) &&
+      !isNaN(qty)
+    ) {
+      const profitLoss = (current - purchase) * qty;
+      addStock({
+        id: Date.now(),
+        symbol,
+        currentPrice: current,
+        quantity: qty,
+        purchasePrice: purchase,
+        profitLoss,
+      });
+      // Reset form
       setSymbol('');
       setCurrentPrice(null);
       setQuantity('');
       setPurchasePrice('');
-      setError('');
     } else {
-      alert('Fill all fields and select a stock.');
+      alert('Please select a stock and ensure all values are valid numbers.');
     }
   };
 
@@ -112,35 +118,35 @@ const StockForm = () => {
   return (
     <div className="page-background">
       <div className="form-box">
-        {/* Form */}
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (symbol && currentPrice !== null && quantity && purchasePrice) {
-              const profitLoss = (currentPrice - parseFloat(purchasePrice)) * parseInt(quantity);
-              setStockList(prev => [
-                ...prev,
-                {
-                  id: Date.now(),
-                  symbol,
-                  currentPrice,
-                  quantity: parseInt(quantity),
-                  purchasePrice: parseFloat(purchasePrice),
-                  profitLoss,
-                },
-              ]);
-              // reset inputs
+            if (
+              symbol &&
+              currentPrice !== null &&
+              quantity &&
+              purchasePrice
+            ) {
+              const profitLoss =
+                (currentPrice - parseFloat(purchasePrice)) * parseInt(quantity);
+              addStock({
+                id: Date.now(),
+                symbol,
+                currentPrice,
+                quantity: parseInt(quantity),
+                purchasePrice: parseFloat(purchasePrice),
+                profitLoss,
+              });
               setSymbol('');
+              setCurrentPrice(null);
               setQuantity('');
               setPurchasePrice('');
-              setCurrentPrice(null);
             } else {
-              alert('Select symbol, enter quantity and purchase price.');
+              alert('Fill all fields and wait for current price.');
             }
           }}
           className="stock-form"
         >
-          {/* Symbol dropdown */}
           <div className="form-group">
             <label htmlFor="symbol">Symbol:</label>
             {loadingSymbols ? (
@@ -150,7 +156,7 @@ const StockForm = () => {
                 id="symbol"
                 className="form-control"
                 value={symbol}
-                onChange={(e) => handleSymbolChange(e)}
+                onChange={handleSymbolChange}
                 required
               >
                 <option value="">Select a stock</option>
@@ -161,7 +167,6 @@ const StockForm = () => {
             )}
           </div>
 
-          {/* Show current price */}
           {currentPrice !== null && (
             <div className="current-price-box">
               <h3>{symbol}</h3>
@@ -169,7 +174,6 @@ const StockForm = () => {
             </div>
           )}
 
-          {/* Quantity input */}
           <div className="form-group">
             <label htmlFor="quantity">Quantity:</label>
             <input
@@ -183,7 +187,6 @@ const StockForm = () => {
             />
           </div>
 
-          {/* Purchase Price input */}
           <div className="form-group">
             <label htmlFor="purchasePrice">Purchase Price:</label>
             <input
@@ -198,7 +201,6 @@ const StockForm = () => {
             />
           </div>
 
-          {/* Add button */}
           <button
             type="submit"
             disabled={!currentPrice}
@@ -207,39 +209,9 @@ const StockForm = () => {
             Add Stock
           </button>
         </form>
-
-        {/* Stocks list */}
-        <div className="stock-list">
-          {stockList.map((stock) => (
-            <div key={stock.id} className="stock-item">
-              <div className="stock-header">
-                <h4>{stock.symbol}</h4>
-                <button
-                  className="delete-btn"
-                  onClick={() => handleDelete(stock.id)}
-                  title="Delete"
-                >
-                  &times;
-                </button>
-              </div>
-              <p>Quantity: {stock.quantity}</p>
-              <p>Purchase Price: ${stock.purchasePrice.toFixed(2)}</p>
-              <p>Current Price: ${stock.currentPrice.toFixed(2)}</p>
-              <p
-                style={{
-                  color: stock.profitLoss >= 0 ? 'green' : 'red',
-                  fontWeight: 'bold',
-                }}
-              >
-                {stock.profitLoss >= 0 ? '+' : '-'}
-                ${Math.abs(stock.profitLoss).toFixed(2)}
-              </p>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );
-}; // closing the component function
+};
 
 export default StockForm;
