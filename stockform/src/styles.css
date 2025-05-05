@@ -1,5 +1,5 @@
 .page-background {
-  min-height: 100vh;
+  min-height: 50vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -22,29 +22,45 @@
   gap: 20px;
 }
 
+/* --- Styles for the stock list with rounded corners --- */
 .stock-item {
   background-color: #fff;
-  border-radius: 12px;
+  border-radius: 12px; /* Rounded corners */
   padding: 15px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  position: relative;
+  display: flex;
+  justify-content: space-between; /* Space between symbol & delete button */
+  align-items: center;
+  margin-bottom: 10px; /* Spacing between items */
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
+.stock-item:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+
+/* --- Header inside each stock box --- */
 .stock-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 10px;
 }
 
+/* Delete button style as a large "×" icon */
 .delete-btn {
   background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: 1.5rem; /* Larger icon size */
   color: #b00;
   cursor: pointer;
   line-height: 1;
+  padding: 0;
+  transition: color 0.2s, transform 0.2s;
 }
 
+/* Hover effect on delete button */
 .delete-btn:hover {
   color: #f00;
+  transform: scale(1.1);
 }
